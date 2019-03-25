@@ -3,6 +3,8 @@ Simple logic to generate small prime number array up to N
 
 Below simple Javascript code:
 
+## USAGE: copy and paste the following Javascript function into browser console
+
 ```
 function generatePrimeNumberArrayUpTo(n) {
   "use strict";
@@ -24,7 +26,14 @@ function generatePrimeNumberArrayUpTo(n) {
 
   // local private function
   let findPrimeFactorFromList = function(val) {
+    const limit = Math.floor(Math.sqrt(val));
     for(let i = 0; i < primeLength; i++) {
+
+      if(primeArray[i] > limit) {
+        // prime value is larger than limit, so exit loop
+        break; // val is a prime
+      }
+
       if(val % primeArray[i] == 0) {
         return primeArray[i];
       }
@@ -82,12 +91,17 @@ Output (JSON array):
 ```
 
 In my Macbook Pro (macOS Mojave 10.14.3, Intel i7 2.8Ghz with 16GB RAM), below is the 'average' result:
-1. Total prime numbers under 1.000.000 (one million) is 78,498 prime numbers, requires around 10 seconds.
-2. Total prime numbers under 2.000.000 (two millions) is 148,933 prime numbers, requires around 35 seconds
-3. Total prime numbers under 10.000.000 (ten millions) is 664,579 prime numbers, I have only done 2 trials: 
-- 1st trial in Firefox (v65.0.1) took 4,748,212 millisecond or 1 hour and 19 minutes.
-- 2nd trial in Chrome (v73.0.3683.75) took 4,733,679 millisecond or 1 hour 18 minutes.
+1. Total prime numbers under 1.000.000 (one million) is 78,498 prime numbers, requires around 80 millisecond (less than 1 second)
+2. Total prime numbers under 2.000.000 (two millions) is 148,933 prime numbers, requires around 170 millisecond
+3. Total prime numbers under 10.000.000 (ten millions) is 664,579 prime numbers, requires around 1,2 second
+4. Total prime numbers under 100.000.000 (one hundred millions) is 5,761,455 prime numbers, 
+* In Firefox (v65.0.1), average time is 27 seconds 
+* In Chrome (v73.0.3683.75), average time is 25 seconds 
+* In Brave (v0.61.52, Chromium build: 73.0.3683.86), average time is 25 seconds
+
+### WARNING: do not use very large number, it will take a very long time and may crash your browser.
 
 Theoretically this Javascript logic can generate prime number list up to 9.007.199.254.740.991 (Number.MAX_SAFE_INTEGER, Javascript maximum value for a safe number), but I never try it because I do not want to waste time to see how long it will be completed also I think we could not store/display them all inside browser because there maybe not be enough memory for browser to allocate/store and to display all prime numbers below 9.007.199.254.740.991, anyone is welcome to try it and share the required time to generate them.
 
-Thanks in advance for anyone who contribute to optimize the code.
+
+### Thanks in advance for anyone who contribute to optimize the code.
