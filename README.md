@@ -133,7 +133,7 @@ MacBook Pro (15 inch, 2017) with macOS Mojave 10.14.3, Intel i7 (2.8Ghz) with RA
 * In Brave (v0.61.52, Chromium build: 73.0.3683.86), average time is 24 seconds
 * In Safari (v12.0.3), average time is 68 seconds (slowest)
 
-# The result may vary with each computer/smartphone/browser.
+### The result should be different with each computer / smartphone specification.
 
 ### WARNING: do not use very large number, it will take a very long time and may crash your browser.
 
