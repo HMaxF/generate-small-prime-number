@@ -1,4 +1,4 @@
-# generate-small-prime-number
+# Generate small prime numbers
 Simple logic to generate small prime number array up to N
 
 Below simple Javascript code:
@@ -89,6 +89,30 @@ Output (JSON array):
 ```
 [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
 ```
+For benchmarking purposes, to get elapsed time and display the last 3 created prime numbers, please use this wrapper:
+```
+function wrapperToGeneratePrimeNumbersListUpTo(number) {
+  let startTime = new Date();
+  let primeArray = generatePrimeNumberArrayUpTo(number);
+  let elapsedTime = new Date() - startTime;
+
+  // display stat
+  let totalPrime = primeArray.length;
+  console.log('wrapperToGeneratePrimeNumbersListUpTo(' + number + '), elapsed time: ' + elapsedTime + ' ms, total primes: ' + totalPrime);
+
+  // display the 3 last created prime numbers
+  console.log('3 last created prime numbers: ' + primeArray[totalPrime - 3] + ', ' + primeArray[totalPrime - 2] + ', ' + primeArray[totalPrime - 1])
+}
+```
+Simply call it like:
+```
+wrapperToGeneratePrimeNumbersListUpTo(1000000);
+``` 
+Console output should be similar to 
+```
+wrapperToGeneratePrimeNumbersListUpTo(1000000), elapsed time: 107 ms, total primes: 78498
+3 last created prime numbers: 999961, 999979, 999983
+```
 
 In my Macbook Pro (macOS Mojave 10.14.3, Intel i7 2.8Ghz with 16GB RAM), below is the 'average' result:
 1. Total prime numbers under 1.000.000 (one million) is 78,498 prime numbers, requires around 80 millisecond (less than 1 second)
@@ -101,7 +125,7 @@ In my Macbook Pro (macOS Mojave 10.14.3, Intel i7 2.8Ghz with 16GB RAM), below i
 
 ### WARNING: do not use very large number, it will take a very long time and may crash your browser.
 
-Theoretically this Javascript logic can generate prime number list up to 9.007.199.254.740.991 (Number.MAX_SAFE_INTEGER, Javascript maximum value for a safe number), but I never try it because I do not want to waste time to see how long it will be completed also I think we could not store/display them all inside browser because there maybe not be enough memory for browser to allocate/store and to display all prime numbers below 9.007.199.254.740.991, anyone is welcome to try it and share the required time to generate them.
+Theoretically this Javascript logic can generate prime number list up to 9.007.199.254.740.991 (Number.MAX_SAFE_INTEGER, Javascript maximum value for a safe number), but I never try it because I don't think my computer has enough memory to hold the generated prime numbers. anyone is welcome to try it and share the required time to generate them.
 
 
-### Thanks in advance for anyone who contribute to optimize the code.
+### Thanks in advance for anyone who share this code to others and especially contribute to optimize the code.
