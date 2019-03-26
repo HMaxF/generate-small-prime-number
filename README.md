@@ -1,9 +1,9 @@
-# Generate small prime numbers
-Simple logic to generate small prime number array up to N
+# Generate Small Prime Numbers
 
-Below simple Javascript code:
+This javascript code is to generate small prime numbers array up to N
 
-## USAGE: copy and paste the following Javascript function into browser console
+## USAGE
+Copy and paste the following Javascript function into browser console
 
 ```
 function generatePrimeNumberArrayUpTo(n) {
@@ -80,52 +80,64 @@ function generatePrimeNumberArrayUpTo(n) {
 
   return primeArray;
 }
-```
-Call the function with a number as parameter, such as:
-```
-generatePrimeNumberArrayUpTo(100)
-```
-Output (JSON array): 
-```
-[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
-```
-For benchmarking purposes, to get elapsed time and display the last 3 created prime numbers, please use this wrapper:
-```
-function wrapperToGeneratePrimeNumbersListUpTo(number) {
+
+function benchmark(number) {
+  console.log('benchmark(' + number + ')');
+
   let startTime = new Date();
   let primeArray = generatePrimeNumberArrayUpTo(number);
   let elapsedTime = new Date() - startTime;
 
   // display stat
   let totalPrime = primeArray.length;
-  console.log('wrapperToGeneratePrimeNumbersListUpTo(' + number + '), elapsed time: ' + elapsedTime + ' ms, total primes: ' + totalPrime);
+  console.log('benchmark elapsed time: ' + elapsedTime + ' ms, total primes: ' + totalPrime);
 
   // display the 3 last created prime numbers
   console.log('3 last created prime numbers: ' + primeArray[totalPrime - 3] + ', ' + primeArray[totalPrime - 2] + ', ' + primeArray[totalPrime - 1])
 }
 ```
-Simply call it like:
+To get the prime number array output, call the function with a number as parameter, such as:
 ```
-wrapperToGeneratePrimeNumbersListUpTo(1000000);
-``` 
-Console output should be similar to 
+generatePrimeNumberArrayUpTo(100)
 ```
-wrapperToGeneratePrimeNumbersListUpTo(1000000), elapsed time: 107 ms, total primes: 78498
+Output (JSON array):
+```
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+```
+WARNING: direct output to browser console (for display) may take longer than the time to generate them.
+
+### Benchmarking
+To get the elapsed time and display the last 3 created prime numbers, please create an optimal condition for each browser by:
+1. Close browser to flush all cache (and possibly other background processes) and re-open browser with empty page (no other window).
+2. Open browser's console (developer mode).
+3. Copy and paste the code above into browser's console.
+4. Start the benchmark by calling:
+```
+benchmark(1000000);
+```
+Console output should be similar to
+```
+benchmark(1000000)
+benchmark elapsed time: 139 ms, total primes: 78498
 3 last created prime numbers: 999961, 999979, 999983
 ```
+NOTE: As usual, during benchmarking please do not use your computer to avoid CPU doing many other things.
 
-In my Macbook Pro (macOS Mojave 10.14.3, Intel i7 2.8Ghz with 16GB RAM), below is the 'average' result:
-1. Total prime numbers under 1.000.000 (one million) is 78,498 prime numbers, requires around 80 millisecond (less than 1 second)
-2. Total prime numbers under 2.000.000 (two millions) is 148,933 prime numbers, requires around 170 millisecond
-3. Total prime numbers under 10.000.000 (ten millions) is 664,579 prime numbers, requires around 1,2 second
-4. Total prime numbers under 100.000.000 (one hundred millions) is 5,761,455 prime numbers, 
-* In Firefox (v65.0.1), average time is 27 seconds 
-* In Chrome (v73.0.3683.75), average time is 25 seconds 
-* In Brave (v0.61.52, Chromium build: 73.0.3683.86), average time is 25 seconds
+### Reference
+MacBook Pro (15 inch, 2017) with macOS Mojave 10.14.3, Intel i7 (2.8Ghz) with RAM 16 GB, below is the 'average' result:
+1. Benchmark(1000000), total prime under one million are 78,498 prime numbers, requires around 60 ms (less than 1 second)
+2. Benchmark(10000000), total prime under ten millions are 664,579 prime numbers, requires around 1250 ms (a little over 1 second)
+3. Benchmark(100000000), total prime under one hundred millions are 5,761,455 prime numbers,
+* In Firefox (v65.0.1), average time is 33 seconds
+* In Chrome (v73.0.3683.75), average time is 24 seconds
+* In Brave (v0.61.52, Chromium build: 73.0.3683.86), average time is 24 seconds
+* In Safari (v12.0.3), average time is 68 seconds (slowest)
+
+# The result may vary with each computer/smartphone/browser.
 
 ### WARNING: do not use very large number, it will take a very long time and may crash your browser.
 
-Theoretically this Javascript logic can generate prime number list up to 9.007.199.254.740.991 (Number.MAX_SAFE_INTEGER, Javascript maximum value for a safe number), but I never try it because I don't think my computer has enough memory to hold the generated prime numbers. anyone is welcome to try it and share the required time to generate them.
+Theoretically this Javascript logic can generate prime number list up to 9.007.199.254.740.991 (Number.MAX_SAFE_INTEGER, Javascript maximum value for a safe number), anyone who use computer with very large memory (more than 32 GB) is welcome to try it and share the required time to generate them.
 
 
-### Thanks in advance for anyone who share this code to others and especially contribute to optimize the code.
+### Thanks in advance for anyone who share this code to others and especially contribute to optimize the code even faster.
