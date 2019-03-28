@@ -1,4 +1,4 @@
-# Generate Small Prime Numbers
+# Javascript :: Generate Small Prime Numbers
 
 This javascript code is to generate small prime numbers array up to N
 
@@ -23,13 +23,14 @@ function generatePrimeNumberArrayUpTo(n) {
   // these primes are the only single digit primes.
   let primeArray = [2,3,5,7];
   let primeLength = primeArray.length;
+  let checkLimit = 5; // init value, because next number to check is 11, so set to 5 => 5^2 = 25
+  let maxNumberForCheck = checkLimit * checkLimit;
 
   // local private function
   let findPrimeFactorFromList = function(val) {
-    const limit = Math.floor(Math.sqrt(val));
     for(let i = 0; i < primeLength; i++) {
 
-      if(primeArray[i] > limit) {
+      if(primeArray[i] > checkLimit) {
         // prime value is larger than limit, so exit loop
         break; // val is a prime
       }
@@ -76,6 +77,13 @@ function generatePrimeNumberArrayUpTo(n) {
 
     // set next value, ends with '1' =================
     x += 2;
+
+    // need to update checkLimit ?
+    if(maxNumberForCheck < x + 10) { // 10 = MAX increment of x in 1 while() loop => 11,21,31,41,51,61,etc.
+      // do it here instead of inside findPrimeFactorFromList() -> a little optimization
+      checkLimit = Math.ceil(Math.sqrt(x + 10)); // NOTE: ROUND DOWN -> remove fraction
+      maxNumberForCheck = checkLimit * checkLimit;
+    }
   }
 
   return primeArray;
@@ -135,7 +143,8 @@ MacBook Pro (15 inch, 2017) with macOS Mojave 10.14.3, Intel i7 (2.8Ghz) with RA
 
 ### The result should be different with each computer / smartphone specification.
 
-### WARNING: do not use very large number, it will take a very long time and may crash your browser.
+### WARNING:
+Do not use very large number, it will take a very long time and may crash your browser.
 
 Theoretically this Javascript logic can generate prime number list up to 9.007.199.254.740.991 (Number.MAX_SAFE_INTEGER, Javascript maximum value for a safe number), anyone who use computer with very large memory (more than 32 GB) is welcome to try it and share the required time to generate them.
 
