@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick.Work</title>
+<meta name="description" content="Free tutorials and info around the web">
+<meta name="keywords" content="HTML,CSS,XML,JavaScript">
+<meta name="author" content="Hariyanto Lim">
+<meta name="contact" content="hariyanto.lim@gmail.com">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  padding: 10px;
+  margin: 0;
+
+  color: #ccc;
+  background-color: #000;
+
+  font-size: 1em;
+  font-family: georgia, "Times New Roman",Times,serif;
+
+  line-height: 1.4;
+  
+  /*word-break: break-word;*/
+  overflow-wrap: break-word;
+}
+
+header {
+  display: block;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2em;
+  color: #ccc;
+  text-shadow: 0px 0px 3px #0f0;
+}
+h2 {
+  font-size: 1.5em;
+  color: #ccc;
+  text-shadow: 0px 0px 3px #f00;
+}
+h3 {
+  font-size: 1.1em;
+  color: #ccc;
+  text-shadow: 0px 0px 3px #00f;
+}
+
+a {
+  font-style: normal;
+  text-decoration: none;
+  color: #0c0;
+}
+
+/* nomor */
+a:hover {
+  color: #0f0;
+}
+
+a.logo {
+  color: #ccc;
+}
+a.logo:hover {
+  color: #fff;
+}
+a.logo::first-letter {
+  color: #c00;
+}
+a.logo::first-letter:hover {
+  color: #f00;
+}
+
+p {
+  padding: 5px;
+  text-indent: 2em; /* indent first line */
+}
+
+p::first-letter {
+  /*initial-letter: 2; /* 20181231 : currently only supported in Safari browser */
+  font-size: 1.6em;
+  font-weight: normal;
+  font-style: italic;
+  /*color: #990; */
+  margin-right: 2px;
+}
+
+em {
+  color: #fff; /* emphasize using brigther color */
+  font-style: italic;
+}
+
+span {
+  padding: 1px 5px;
+  border: 1px dotted #999;
+  color: #fff;
+  white-space: nowrap; /* do not allow wrap, force 1 line */
+  font-style: italic;
+  /*text-decoration: underline; */
+}
+
+ul,
+ol {
+	/* use default position outside, but add margin-left 1em, to keep it "inside and align for multiline long text" */
+  list-style-position: outside;
+	margin-left: 2.5em;
+}
+
+li {
+	/*margin: 0px 0 0px 0; /* space between li item */
+  padding: 3px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+
+  /* make table has horizontal scroller */
+  display: block;
+  overflow-x: auto;
+  /*white-space: nowrap; */
+}
+
+th {
+  background-color: #333;
+}
+th,
+td {
+  padding: 5px;
+  border: 1px solid #666;
+}
+
+pre {
+  margin: 10px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  display: block;
+  color: #ccc;
+  background-color: #333;
+  font-family: monospace;
+
+  /* make this website Responsive, break long line */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+  
+  /* make it scroll horizontally in narrow width */
+  overflow-x: auto;
+}
+
+strong {
+  font-weight: bold;
+  color: #66f;
+}
+
+u {
+  text-decoration: underline;
+}
+
+</style>
+</head>
+<body>
+
+<header>Small Prime Numbers Generator And Factoring</header>
+
+<hr style="margin: 10px 0"/>
+
+<p>This page is demo page using Javascript to:</p>
+<ul>
+  <li><a href="#generate-small-prime-numbers">Generate small prime numbers</a></li>
+  <li><a href="#find-prime-factors">Find prime factors</a></li>
+</ul>
+ 
+<hr />
+<div id="generate-small-prime-numbers"></div>
+<p>Please try to enter a small number (less than 10 millions) and click the 'generate' button.</p>
+
+<br />
+<div style="width: 100%; text-align: center;">
+  <input id="generate_prime_number_list_up_to_value"
+    type="number" min="10" max="9007199254740991"
+    style="width: 15rem; padding: 5px;"
+    placeholder="type a small number" />
+  <button id="btn_generate_prime_number_list" style="padding: 5px;" onclick="generatePrimeNumberList()">Generate</button>
+  <div>Generated prime number list:<br /><span id="result-info"></span></div>
+  <textarea id="generated_prime_number_list" style="width: 100%; height: 200px"></textarea>
+</div>
+
+<p>Below is the average result in reference machine to compare: MacBook Pro (15 inch, 2017) with macOS Mojave 10.14.3, Intel i7 (2.8Ghz) with RAM 16 GB</p>
+<ul>
+  <li>Total prime numbers under 1.000.000 (one million) is 78,498 prime numbers, requires around 60 ms (less than 1 second)</li>
+  <li>Total prime numbers under 2.000.000 (two millions) is 148,933 prime numbers, requires around 145 ms</li>
+  <li>Total prime numbers under 10.000.000 (ten millions) is 664,579 prime numbers, requires around 1250 ms</li>
+  <li>Total prime numbers under 100.000.000 (one hundred millions) is  5,761,455 prime numbers,
+    <br />In Firefox (v65.0.1), average time is 27 seconds
+    <br />In Chrome (v73.0.3683.75), average time is 25 seconds
+    <br />In Brave (v0.61.52, Chromium build: 73.0.3683.86), average time is 25 seconds
+    <br />In Safari (v12.0.3), average time is 19 seconds (using WebWorker), 26 seconds (using console).</li>
+</ul>
+
+NOTES:
+<ul>
+  <li>This page use <em style="color: #f00">WebWorker (separate thread)</em>,
+    so the operation is a little faster than calling the function in browser's console.</li>
+  <li>For large number, I noticed in Chrome browser (both Mac and Android version),
+    displaying all the prime numbers into the textarea takes a lot of time,
+    so please be patient to wait to see the result.</li>
+  <li>Theoretically this Javascript logic can generate prime number list up to 9.007.199.254.740.991
+    (Number.MAX_SAFE_INTEGER, Javascript maximum value for a safe number),
+    but I never try it because I don't think my computer has enough memory to hold all the generated prime numbers,
+    anyone who use computer with very large memory (more than 32 GB) is welcome to try it and share the required time to generate them.</li>
+  <li><em style="color: #f00">WARNING: Please do not use smartphone and try to input more than 10 millions,
+    it will be very slow, consume a lot of battery and generate heat.</em></li>
+  <li>In my Android smartphone with CPU Samsung Exynos 5 Octa 5430 (1.8Ghz) with RAM 2GB,
+    to generate all prime numbers below 1.000.000 took average 680 milliseconds (less than 1 second).</li>
+</ul>
+
+<hr />
+<div id="find-prime-factors"></div>
+
+<p style="text-align: center;">Small prime number factoring (prime number checker)</p>
+
+<p>Please type a small number less than or equal to 10<sup>12</sup> = 1.000.000.000.000 = 1 trillion.</p>
+
+<div style="width: 100%; text-align: center;">
+  <!-- this input box should not use type="number" because we want to use COMMA for thousand separator -->
+  <input id="number_to_factor"
+    type="text"
+    style="width: 15rem; padding: 5px;"
+    onkeyup="find_number_factor();"
+    placeholder="input a number up to 1.000.000.000.000" />
+  <br /><br />
+  <div id="number_factors" style="padding: 5px; border: 1px solid #666"></div>
+</div>
+
+<script>
+
+function generatePrimeNumberList() {
+
+  // element to display generated prime number list !!
+  let eleGeneratedPrimeNumberList = document.getElementById('generated_prime_number_list');
+
+  // get value
+  let value = parseInt(document.getElementById('generate_prime_number_list_up_to_value').value);
+
+  if(value < 10) {
+    eleGeneratedPrimeNumberList.value = 'Please type in a value >= 10';
+    return;
+  } else if(value > Number.MAX_SAFE_INTEGER) {
+    eleGeneratedPrimeNumberList.value = 'Please type in a value < ' + Number.MAX_SAFE_INTEGER;
+    return;
+  }
+
+  // indicate in progress because UI will be frozen
+  let eleButton = document.getElementById('btn_generate_prime_number_list');
+  eleButton.innerHTML = "Generating ..";
+
+  generatePrimeNumberArrayUsingWebWorker(value, function(result) {
+    if(result && Array.isArray(result)) {
+      // finished
+      callbackAfterGeneratedPrimeNumberArray(result);
+    } else if(typeof(result) == 'string') {
+      console.log(result);
+    }
+  });
+}
+
+var startTime = 0;
+
+function callbackAfterGeneratedPrimeNumberArray(generatedPrimeNumberArray) {
+  //console.log('callbackAfterGeneratedPrimeNumberArray(generatedPrimeNumberArray)');
+
+  let totalGeneratedPrimeNumber = (generatedPrimeNumberArray ? generatedPrimeNumberArray.length : 0);
+
+  // display elapsed time
+  const elapsedTimeMillisecond = Date.now() - startTime;
+  document.getElementById('result-info').innerHTML =
+    'Total prime: ' + (totalGeneratedPrimeNumber ? totalGeneratedPrimeNumber.toLocaleString() : 0)
+    + '<br />Time: ' + elapsedTimeMillisecond + ' millisecond';
+
+  // update UI
+  let eleButton = document.getElementById('btn_generate_prime_number_list');
+  // reset button label
+  eleButton.innerHTML = "Generate";
+
+  if(totalGeneratedPrimeNumber < 1) {
+    // nothing to display
+    return;
+  }
+
+  // convert array to string
+  let string = '';
+  generatedPrimeNumberArray.map(function(value, index) {
+    if(index > 0) {
+      string += ","; // comma
+      if(index % 10 == 0) {
+        string += "\n"; // new line
+      }
+    }
+
+    string += value;
+  });
+
+  // element to display generated prime number list !!
+  let eleGeneratedPrimeNumberList = document.getElementById('generated_prime_number_list');
+  eleGeneratedPrimeNumberList.value = string;
+}
+
+// create WebWorker WITHOUT an external file !!!
+// create variable for embedded worker as global variable, 
+// so we can delete it later
+var mywebworker;
+var primeNumberGeneratorCallback = null;
+function generatePrimeNumberArrayUsingWebWorker(value, callback) {
+  if(! (callback)) {
+    // no callback = can not continue
+    return;
+  }
+  primeNumberGeneratorCallback = callback;
+
+  // prevent multiple instance 
+  if(mywebworker) {
+    primeNumberGeneratorCallback('generatePrimeNumberArrayUsingWebWorker(' + value + '), Worker is already existed, can not create another');
+    return null;
+  }
+
+  if(window.Worker) {
+    // browser support Web Worker, so create it
+
+    // create a Blob of a function name to be a 'file' (fake file)
+    let b = new Blob(["onmessage=" + wrapperToGeneratePrimeNumberArray.toString()], { type: "text/javascript"});
+
+    // create WebWorker from blob file
+    mywebworker = new Worker(URL.createObjectURL(b));
+
+    // define callback
+    mywebworker.onmessage = function(result) {
+      // at this moment, this is in main UI (not in thread)
+      if(result && Array.isArray(result.data)) {      
+        primeNumberGeneratorCallback(result.data);
+      } else {
+        // error handling ...
+        primeNumberGeneratorCallback('web worker callback onmessage, error: ' + result.data);        
+      }
+
+      // remove Worker instance 
+      mywebworker.terminate();
+      mywebworker = undefined; // remove variable from memory
+    }
+
+    // before start, we check time
+    startTime = Date.now();
+
+    // call the function with parameter
+    mywebworker.postMessage(value);
+
+    return mywebworker;
+  } else {
+    primeNumberGeneratorCallback('Sorry, your browser does NOT support Web Worker');
+    return null;
+  }
+}
+
+function wrapperToGeneratePrimeNumberArray(msg) {
+  "use strict";
+
+  // NOTE: this function will be called from inside WebWorker
+  // so can not use other variable/function outside this function
+  // everything must be local in here !!
+  //console.log('wrapperToGeneratePrimeNumberArray(MessageEvent)');
+
+  // this function is called from WebWorker, so we can not pass any parameter,
+  // only can retrieve it from parameter (MessageEvent)
+  if(! (msg)) {
+    // send callback about this error
+    self.postMessage('error, MessageEvent is not defined.');
+    return;
+  }
+
+  let val = msg.data;
+  if(!(val)) {
+    console.error('error, val is not defined');
+  } else if(val < 10) {
+    console.error('error, val (' + val + ') is less than minimum: 10');
+  } else if(val > Number.MAX_SAFE_INTEGER) {
+    console.error('error, val (' + val + ') is more than maximum: ' + Number.MAX_SAFE_INTEGER);
+  }
+
+  let generatePrimeNumberArrayUpTo = function(n) {
+    "use strict";
+
+    if(n < 10) {
+      // error value should be >= 10
+      return []; // empty array
+    }
+
+    if(n > Number.MAX_SAFE_INTEGER) {
+      // error value should be less than Number.MAX_SAFE_INTEGER
+      return []; // empty array
+    }
+
+    console.log('generatePrimeNumberArrayUpTo(' + n + ') starting ..');
+
+    // create local variable and store first 4 primes
+    // these primes are the only single digit primes.
+    let primeArray = [2,3,5,7];
+    let primeLength = primeArray.length;
+    let checkLimit = 5; // init value, because next number to check is 11, so set to 5 => 5^2 = 25
+    let maxNumberForCheck = checkLimit * checkLimit;
+
+    // local private function
+    let findPrimeFactorFromList = function(val) {
+      for(let i = 0; i < primeLength; i++) {
+
+        if(primeArray[i] > checkLimit) {
+          // prime value is larger than limit, so exit loop
+          break; // val is a prime
+        }
+
+        if(val % primeArray[i] == 0) {
+          return primeArray[i];
+        }
+      }
+
+      // at this point, it means no prime from the list can divide 'val' evenly
+      // so 'val' is a prime, so add 'val' to prime list
+      primeArray.push(val);
+
+      // increase length for next loop
+      primeLength++;
+    }
+
+    // declare next value to check
+    let x = 11;
+    while(x <= n) {
+
+      // ONE loop to ONLY check values end with '1', '3', '7' and '9'
+      // because they are probable prime number, so ONLY need to check them !
+      // eg: 11,13,17,19,21,23,27,29,31,33,37,39, ...
+
+      // other values ends with either '0','2','4','5','6' or '8' are NOT prime
+
+      // at this point 'x' MUST BE ends with '1'
+      findPrimeFactorFromList(x);
+
+      // hardcode small 'increment' values [2,4,2,2] to optimize speed a little
+
+      x += 2; // ends with '3' ==========================
+      if(x > n) break;
+      findPrimeFactorFromList(x);
+
+      x += 4; // ends with '7' ==========================
+      if(x > n) break;
+      findPrimeFactorFromList(x);
+
+      x += 2; // ends with '9' ==========================
+      if(x > n) break;
+      findPrimeFactorFromList(x);
+
+      // set next value, ends with '1' =================
+      x += 2;
+
+      // need to update checkLimit ?        
+      if(maxNumberForCheck < x + 10) { // 10 = MAX increment of x in 1 while() loop => 11,21,31,41,51,61,etc.
+        // do it here instead of inside findPrimeFactorFromList() -> a little optimization
+        checkLimit = Math.ceil(Math.sqrt(x + 10)); // NOTE: ROUND DOWN -> remove fraction
+        maxNumberForCheck = checkLimit * checkLimit;
+      }
+    }
+
+    console.log('generatePrimeNumberArrayUpTo(' + n + ') finished, total: ' + primeArray.length);
+
+    return primeArray;
+  }
+
+  let generatedPrimeNumberArray = generatePrimeNumberArrayUpTo(val);
+
+  // finished, so send callback with result
+  self.postMessage(generatedPrimeNumberArray);
+}
+
+/**************************************************************
+ ****** BELOW IS to find prime factors of a number ************
+ *************************************************************/
+
+function find_number_factor() {
+  if(!primeNumbers || primeNumbers.length < 1) {
+    // generate it small prime numbers under 1 million
+    generatePrimeNumberArrayUsingWebWorker(1000000, function(result) {
+      if(result && Array.isArray(result)) {
+        // save it 
+        primeNumbers = result;
+        // call again
+        setTimeout(find_number_factor, 250);
+      } else if(typeof(result) == 'string') {
+        console.log(result);
+      }
+    });
+    return
+  }
+
+  var eleNumber = document.getElementById('number_to_factor');
+
+  var result = '';
+  var number = 0;
+  if(eleNumber.value.trim().length < 1) {
+    result = ''
+    number = ''
+  } else {
+
+    number = parseInt(eleNumber.value.trim().replace(/\D/g, ''));
+
+    if(number < 2) {
+      result = 'Your input number is ' + number + ', please input a positive number bigger than 1.';
+    } else {
+      var factors = getPrimeFactorUsingEncodedPrimeNumberList(number);
+
+      if(Array.isArray(factors)) {
+        if(factors.length == 1) {
+          if(number > Math.pow(10,12)) {//1000000000000) {
+            result = number.toLocaleString() + ' is a POSSIBLE PRIME number (not guarantee because larger than '
+              + Math.pow(10,12).toLocaleString() + ')';
+          } else {
+            result = number.toLocaleString() + ' is a PRIME number';
+          }
+        } else {
+          result = number.toLocaleString() + ' is NOT a prime, the factors are ';
+          var arrayLength = factors.length;
+
+          for(var i = 0; i < arrayLength; i++) {
+            if(i > 0) {
+              result += " * ";
+            }
+
+            result += factors[i].toLocaleString();
+          }
+        }
+      }
+    }
+  }
+
+  // update result
+  var eleResult = document.getElementById('number_factors');
+  eleResult.innerHTML = result;
+}
+
+var primeNumbers = [];
+function getPrimeFactorUsingEncodedPrimeNumberList(number) {
+  if(number < 2) {
+    return []; // empty array
+  }
+
+  // check small prime numbers
+  if(!primeNumbers) {
+    // no small prime numbers, must create it first
+    return [];
+  }
+
+  let primeNumberArrayLength = primeNumbers.length;
+
+  let result = [];
+
+  let val = number; // copy value because it will be changed
+  let remainder = 0;
+
+  // limit
+  const limit = Math.floor(Math.sqrt(val));
+
+  for(let i = 0; i < primeNumberArrayLength; i++) {
+    if(primeNumbers[i] > limit) {
+      // at this point, it is over limit and there is no divider,
+      // so 'val' is a prime !!
+
+      // exit loop
+      break;
+    }
+
+    remainder = val % primeNumbers[i];
+    if(remainder == 0) {
+      // found a prime factor, so add to result
+      result.push(primeNumbers[i]);
+
+      // prepare next value
+      val /= primeNumbers[i];
+      if(val < 2) {
+        // value too small, can not find factor
+        break;
+      }
+
+      // reset counter, to start from beginning
+      i = -1; // set value -1, so it will be +1 to be 0 (start array index)
+
+      continue;
+    }
+  }
+
+  if(val >= 2) {
+    // if last value >= 2 then it is a prime, add 'val' to prime list
+    const primeLimit = Math.pow(primeNumbers[primeNumbers.length - 1], 2);
+    if(val > primeLimit) {
+      // 'val' is bigger than the last prime number inside array
+      // so it passed all the division trials,
+      // MAYBE 'val' is a prime, TODO: need to check more
+      console.log(val + ' is assumed to be prime because larger than prime number array');
+    }
+
+    result.push(val);
+  }
+
+  return result;
+}
+
+</script>
+
+</body>
+</html>
