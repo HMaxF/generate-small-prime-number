@@ -3,105 +3,122 @@
 This javascript code is to generate small prime numbers array up to N
 
 ## USAGE
-Copy and paste the following Javascript function into browser console
+Choose either:
+1. Download the file small_prime_number_generator_and_factoring.html
+2. Copy and paste the following Javascript function into browser console
 
 ```
-function generatePrimeNumberArrayUpTo(n) {
-  "use strict";
+let generatePrimeNumberArrayUpTo = function(n) {
+    'use strict';
 
-  if(n < 10) {
-    // error value should be >= 10
-    return []; // empty array
-  }
-
-  if(n > Number.MAX_SAFE_INTEGER) {
-    // error value should be less than Number.MAX_SAFE_INTEGER
-    return []; // empty array
-  }
-
-  // create local variable and store first 4 primes
-  // these primes are the only single digit primes.
-  let primeArray = [2,3,5,7];
-  let primeLength = primeArray.length;
-  let checkLimit = 5; // init value, because next number to check is 11, so set to 5 => 5^2 = 25
-  let maxNumberForCheck = checkLimit * checkLimit;
-
-  // local private function
-  let findPrimeFactorFromList = function(val) {
-    for(let i = 0; i < primeLength; i++) {
-
-      if(primeArray[i] > checkLimit) {
-        // prime value is larger than limit, so exit loop
-        break; // val is a prime
-      }
-
-      if(val % primeArray[i] == 0) {
-        return primeArray[i];
-      }
+    if(n < 10) {
+        // error value should be >= 10
+        return []; // empty array
     }
 
-    // at this point, it means no prime from the list can divide 'val' evenly
-    // so 'val' is a prime, so add 'val' to prime list
-    primeArray.push(val);
-
-    // increase length for next loop
-    primeLength++;
-  }
-
-  // declare next value to check
-  let x = 11;
-  while(x <= n) {
-
-    // ONE loop to ONLY check values end with '1', '3', '7' and '9'
-    // because they are probable prime number, so ONLY need to check them !
-    // eg: 11,13,17,19,21,23,27,29,31,33,37,39, ...
-
-    // other values ends with either '0','2','4','5','6' or '8' are NOT prime
-
-    // at this point 'x' MUST BE ends with '1'
-    findPrimeFactorFromList(x);
-
-    // hardcode small 'increment' values [2,4,2,2] to optimize speed a little
-
-    x += 2; // ends with '3' ==========================
-    if(x > n) break;
-    findPrimeFactorFromList(x);
-
-    x += 4; // ends with '7' ==========================
-    if(x > n) break;
-    findPrimeFactorFromList(x);
-
-    x += 2; // ends with '9' ==========================
-    if(x > n) break;
-    findPrimeFactorFromList(x);
-
-    // set next value, ends with '1' =================
-    x += 2;
-
-    // need to update checkLimit ?
-    if(maxNumberForCheck < x + 10) { // 10 = MAX increment of x in 1 while() loop => 11,21,31,41,51,61,etc.
-      // do it here instead of inside findPrimeFactorFromList() -> a little optimization
-      checkLimit = Math.ceil(Math.sqrt(x + 10)); // NOTE: ROUND DOWN -> remove fraction
-      maxNumberForCheck = checkLimit * checkLimit;
+    if(n > Number.MAX_SAFE_INTEGER) {
+        // error value should be less than Number.MAX_SAFE_INTEGER
+        return []; // empty array
     }
-  }
 
-  return primeArray;
+    // create local variable and store first 4 primes
+    // these primes are the only single digit primes.
+    let primeArray = [2,3,5,7];
+
+    // init value
+    let checkLimit = 5; // because next number to check is 11, so set to 5 => 5^2 = 25
+    let maxNumberForCheck = checkLimit * checkLimit;
+
+    // optimize speed, dont allow function to access variable outside function
+    let findPrimeFactorFromList = function(primeArray, val, checkLimit) {
+        
+        // optimize: avoid divide by 2 and 5 because 'val' is always ends with either 1,3,7,9
+        // first test only divide by '3'
+        if(val % 3 == 0) {
+            return;// 3; // not prime
+        }
+
+        // optimise speed by using local variable
+        let primeLength = primeArray.length;
+        let i; // optimize loop, to avoid declare 'i' in for(let i = ..)
+        let prime; // keep as variable to avoid get value by index -> primeArray[i]
+
+        // primeArray = [2,3,5,7,..]
+        // so loop start from index 3, primeArray[3] = '7'      
+        for(i = 3; i < primeLength; i++) {
+            prime = primeArray[i];
+
+            if(prime > checkLimit) {
+                // prime value is larger than limit, so exit loop
+                break; // val is a prime
+            }
+
+            if(val % prime == 0) {
+                return;// prime;
+            }
+        }
+
+        // at this point, it means no prime from the list can divide 'val' evenly
+        // so 'val' is a prime, so add 'val' to prime list
+        primeArray[primeLength] = val; // optimize to use index instead of array.push()
+    }
+
+    // declare next value to check
+    let x = 11;
+
+    // each loop will start at a number ends with '1' => 11,21,31,41,51,61,etc.
+    while(x <= n) {
+
+        // ONE loop to ONLY check values end with '1', '3', '7' and '9'
+        // because they are probable prime number, so ONLY need to check them !
+        // eg: 11,13,17,19,21,23,27,29,31,33,37,39, ...
+
+        // other values ends with either '0','2','4','5','6' or '8' are NOT prime
+
+        // at this point 'x' MUST BE ends with '1'
+        findPrimeFactorFromList(primeArray, x, checkLimit);
+
+        // hardcode small 'increment' values [2,4,2,2] to optimize speed a little
+
+        x += 2; // ends with '3' ==========================
+        if(x > n) break;
+        findPrimeFactorFromList(primeArray, x, checkLimit);
+
+        x += 4; // ends with '7' ==========================
+        if(x > n) break;
+        findPrimeFactorFromList(primeArray, x, checkLimit);
+
+        x += 2; // ends with '9' ==========================
+        if(x > n) break;
+        findPrimeFactorFromList(primeArray, x, checkLimit);
+
+        // set next value, ends with '1' =================
+        x += 2;
+
+        // need to update checkLimit ?        
+        if(maxNumberForCheck < x + 10) { // 10 = MAX increment in 1 loop
+            // do it here instead of inside findPrimeFactorFromList() -> a little optimization
+            checkLimit = Math.floor(Math.sqrt(x + 10)); // NOTE: ROUND DOWN -> remove fraction
+            maxNumberForCheck = checkLimit * checkLimit;
+        }
+    }
+
+    return primeArray;
 }
 
 function benchmark(number) {
-  console.log('benchmark(' + number + ')');
+    console.log('benchmark(' + number + ')');
 
-  let startTime = new Date();
-  let primeArray = generatePrimeNumberArrayUpTo(number);
-  let elapsedTime = new Date() - startTime;
+    let startTime = new Date();
+    let primeArray = generatePrimeNumberArrayUpTo(number);
+    let elapsedTime = new Date() - startTime;
 
-  // display stat
-  let totalPrime = primeArray.length;
-  console.log('benchmark elapsed time: ' + elapsedTime + ' ms, total primes: ' + totalPrime);
+    // display stat
+    let totalPrime = primeArray.length;
+    console.log('benchmark elapsed time: ' + elapsedTime + ' ms, total primes: ' + totalPrime);
 
-  // display the 3 last created prime numbers
-  console.log('3 last created prime numbers: ' + primeArray[totalPrime - 3] + ', ' + primeArray[totalPrime - 2] + ', ' + primeArray[totalPrime - 1])
+    // display the 3 last created prime numbers
+    console.log('3 last created prime numbers: ' + primeArray[totalPrime - 3] + ', ' + primeArray[totalPrime - 2] + ', ' + primeArray[totalPrime - 1])
 }
 ```
 To get the prime number array output, call the function with a number as parameter, such as:
