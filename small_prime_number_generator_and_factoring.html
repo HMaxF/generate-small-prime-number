@@ -262,7 +262,7 @@ function generatePrimeNumberList() {
   eleButton.innerHTML = "Generating ..";
 
   generatePrimeNumberArrayUsingWebWorker(value, function(result) {
-    if(result && Array.isArray(result)) {
+    if(result && Array.isArray(result.primes)) {
       // finished
       callbackAfterGeneratedPrimeNumberArray(result);
     } else if(typeof(result) == 'string') {
@@ -271,18 +271,17 @@ function generatePrimeNumberList() {
   });
 }
 
-var startTime = 0;
-
-function callbackAfterGeneratedPrimeNumberArray(generatedPrimeNumberArray) {
+function callbackAfterGeneratedPrimeNumberArray(data) {
   //console.log('callbackAfterGeneratedPrimeNumberArray(generatedPrimeNumberArray)');
+
+  let generatedPrimeNumberArray = data.primes;
 
   let totalGeneratedPrimeNumber = (generatedPrimeNumberArray ? generatedPrimeNumberArray.length : 0);
 
   // display elapsed time
-  const elapsedTimeMillisecond = Date.now() - startTime;
   document.getElementById('result-info').innerHTML =
     'Total prime: ' + (totalGeneratedPrimeNumber ? totalGeneratedPrimeNumber.toLocaleString() : 0)
-    + '<br />Time: ' + elapsedTimeMillisecond + ' millisecond';
+    + '<br />Time: ' + data.elapsedTime + ' millisecond';
 
   // update UI
   let eleButton = document.getElementById('btn_generate_prime_number_list');
@@ -342,7 +341,7 @@ function generatePrimeNumberArrayUsingWebWorker(value, callback) {
     // define callback
     mywebworker.onmessage = function(result) {
       // at this moment, this is in main UI (not in thread)
-      if(result && Array.isArray(result.data)) {      
+      if(result && Array.isArray(result.data.primes)) {
         primeNumberGeneratorCallback(result.data);
       } else {
         // error handling ...
@@ -353,9 +352,6 @@ function generatePrimeNumberArrayUsingWebWorker(value, callback) {
       mywebworker.terminate();
       mywebworker = undefined; // remove variable from memory
     }
-
-    // before start, we check time
-    startTime = Date.now();
 
     // call the function with parameter
     mywebworker.postMessage(value);
@@ -368,7 +364,7 @@ function generatePrimeNumberArrayUsingWebWorker(value, callback) {
 }
 
 function wrapperToGeneratePrimeNumberArray(msg) {
-  "use strict";
+  'use strict';
 
   // NOTE: this function will be called from inside WebWorker
   // so can not use other variable/function outside this function
@@ -393,7 +389,6 @@ function wrapperToGeneratePrimeNumberArray(msg) {
   }
 
   let generatePrimeNumberArrayUpTo = function(n) {
-    "use strict";
 
     if(n < 10) {
       // error value should be >= 10
@@ -405,39 +400,52 @@ function wrapperToGeneratePrimeNumberArray(msg) {
       return []; // empty array
     }
 
-    console.log('generatePrimeNumberArrayUpTo(' + n + ') starting ..');
-
     // create local variable and store first 4 primes
     // these primes are the only single digit primes.
     let primeArray = [2,3,5,7];
-    let primeLength = primeArray.length;
-    let checkLimit = 5; // init value, because next number to check is 11, so set to 5 => 5^2 = 25
+
+    // init value
+    let checkLimit = 5; // because next number to check is 11, so set to 5 => 5^2 = 25
     let maxNumberForCheck = checkLimit * checkLimit;
 
-    // local private function
-    let findPrimeFactorFromList = function(val) {
-      for(let i = 0; i < primeLength; i++) {
+    // optimize speed, dont allow function to access variable outside function
+    let findPrimeFactorFromList = function(primeArray, val, checkLimit) {
+      
+      // optimize: avoid divide by 2 and 5 because 'val' is always ends with either 1,3,7,9
+      // first test only divide by '3'
+      if(val % 3 == 0) {
+        return;// 3; // not prime
+      }
 
-        if(primeArray[i] > checkLimit) {
+      // optimise speed by using local variable
+      let primeLength = primeArray.length;
+      let i; // optimize loop, to avoid declare 'i' in for(let i = ..)
+      let prime; // keep as variable to avoid get value by index -> primeArray[i]
+
+      // primeArray = [2,3,5,7,..]
+      // so loop start from index 3, primeArray[3] = '7'      
+      for(i = 3; i < primeLength; i++) {
+        prime = primeArray[i];
+
+        if(prime > checkLimit) {
           // prime value is larger than limit, so exit loop
           break; // val is a prime
         }
 
-        if(val % primeArray[i] == 0) {
-          return primeArray[i];
+        if(val % prime == 0) {
+          return;// prime;
         }
       }
 
       // at this point, it means no prime from the list can divide 'val' evenly
       // so 'val' is a prime, so add 'val' to prime list
-      primeArray.push(val);
-
-      // increase length for next loop
-      primeLength++;
+      primeArray[primeLength] = val; // optimize to use index instead of array.push()
     }
 
     // declare next value to check
     let x = 11;
+
+    // each loop will start at a number ends with '1' => 11,21,31,41,51,61,etc.
     while(x <= n) {
 
       // ONE loop to ONLY check values end with '1', '3', '7' and '9'
@@ -447,42 +455,50 @@ function wrapperToGeneratePrimeNumberArray(msg) {
       // other values ends with either '0','2','4','5','6' or '8' are NOT prime
 
       // at this point 'x' MUST BE ends with '1'
-      findPrimeFactorFromList(x);
+      findPrimeFactorFromList(primeArray, x, checkLimit);
 
       // hardcode small 'increment' values [2,4,2,2] to optimize speed a little
 
       x += 2; // ends with '3' ==========================
       if(x > n) break;
-      findPrimeFactorFromList(x);
+      findPrimeFactorFromList(primeArray, x, checkLimit);
 
       x += 4; // ends with '7' ==========================
       if(x > n) break;
-      findPrimeFactorFromList(x);
+      findPrimeFactorFromList(primeArray, x, checkLimit);
 
       x += 2; // ends with '9' ==========================
       if(x > n) break;
-      findPrimeFactorFromList(x);
+      findPrimeFactorFromList(primeArray, x, checkLimit);
 
       // set next value, ends with '1' =================
       x += 2;
 
       // need to update checkLimit ?        
-      if(maxNumberForCheck < x + 10) { // 10 = MAX increment of x in 1 while() loop => 11,21,31,41,51,61,etc.
+      if(maxNumberForCheck < x + 10) { // 10 = MAX increment in 1 loop
         // do it here instead of inside findPrimeFactorFromList() -> a little optimization
-        checkLimit = Math.ceil(Math.sqrt(x + 10)); // NOTE: ROUND DOWN -> remove fraction
+        checkLimit = Math.floor(Math.sqrt(x + 10)); // NOTE: ROUND DOWN -> remove fraction
         maxNumberForCheck = checkLimit * checkLimit;
       }
     }
 
-    console.log('generatePrimeNumberArrayUpTo(' + n + ') finished, total: ' + primeArray.length);
-
     return primeArray;
   }
 
+  let startTime = Date.now();
+
+  console.log('wrapperToGeneratePrimeNumberArray(' + val + ') starting ..');
+
   let generatedPrimeNumberArray = generatePrimeNumberArrayUpTo(val);
 
+  let endTime = Date.now();
+
+  console.log('wrapperToGeneratePrimeNumberArray(' + val + ') finished, total: ' 
+    + generatedPrimeNumberArray.length 
+    + ', elapsed time: ' + (endTime - startTime));
+
   // finished, so send callback with result
-  self.postMessage(generatedPrimeNumberArray);
+  self.postMessage({'elapsedTime': (endTime - startTime), 'primes' : generatedPrimeNumberArray });
 }
 
 /**************************************************************
@@ -493,10 +509,11 @@ function find_number_factor() {
   if(!primeNumbers || primeNumbers.length < 1) {
     // generate it small prime numbers under 1 million
     generatePrimeNumberArrayUsingWebWorker(1000000, function(result) {
-      if(result && Array.isArray(result)) {
+      if(result && Array.isArray(result.primes)) {
         // save it 
-        primeNumbers = result;
-        // call again
+        primeNumbers = result.primes;
+
+        // call again (recursive)
         setTimeout(find_number_factor, 250);
       } else if(typeof(result) == 'string') {
         console.log(result);
