@@ -3,7 +3,6 @@
 This javascript code is to generate small prime numbers array up to N
 
 ## USAGE
-Please clone or download the following files:
 1. Clone/download 2 files: 'small_prime_number_generator_and_factoring.html' & 'small_prime_number_generator.js'
 2. Open 'small_prime_number_generator_and_factoring.html' in your favorite browser and run test.
 
