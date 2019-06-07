@@ -1,10 +1,12 @@
 /**
  * Written by Hariyanto Lim (hariyanto.lim@gmail.com)
  * Update
+ * 20190607 :
+ * Add protection to avoid accidental use N > 1e8
+ * 
  * 20190605 : faster execution
  * a. update logic to optimize the loop
  * b. remove unnecessary IF()
- * 
  * 
  */
 function generateSmallPrimeNumberArrayUpTo(n) {
@@ -13,10 +15,10 @@ function generateSmallPrimeNumberArrayUpTo(n) {
     return []; // empty array
   }
 
-  // WARNING: generate all prime numbers more than 10 millions is slow 
-  if(n > Number.MAX_SAFE_INTEGER) {
-    // error value should be less than Number.MAX_SAFE_INTEGER
-    return []; // empty array
+  // PROTECTION against accidentally generate all prime numbers more than 100 millions
+  // because it may take a long time and overheat the device.
+  if(n > 1e8) {
+    throw new Error('value should be less than 100.000.000, to avoid device overheat and broken');    
   }
 
   // create local variable and store first 4 primes
@@ -70,19 +72,19 @@ function generateSmallPrimeNumberArrayUpTo(n) {
     // NOTE: remove check ==: if(x > n) break;
     // we will 'overshoot' the list without check then reduce it later !!
 
-    x += 2; // ends with '3' ==========================
+    x += 2; // ends with '3' 
     //if(x > n) break;
     checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
 
-    x += 4; // ends with '7' ==========================
+    x += 4; // ends with '7' 
     //if(x > n) break;
     checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
 
-    x += 2; // ends with '9' ==========================
+    x += 2; // ends with '9' 
     //if(x > n) break;
     checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
 
-    // set next value, ends with '1' =================
+    // set next value, ends with '1' 
     x += 2;
 
     // need to update primeArrayIndexLimit ?
@@ -93,13 +95,13 @@ function generateSmallPrimeNumberArrayUpTo(n) {
   }
 
   // we may overshoot the prime number list, 
-  // so we going to reduce it
+  // so we need to check and reduce it
   var validIndex = primeArray.length - 1;
   while(primeArray[validIndex] > n) {
     validIndex--;
   }
   // set length is cutting the array and remove the ends
-  primeArray.length = validIndex + 1;    
+  primeArray.length = validIndex + 1;
 
   return primeArray;
 }

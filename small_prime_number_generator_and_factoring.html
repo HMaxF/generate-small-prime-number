@@ -190,7 +190,7 @@ u {
     value="1000000"
     style="width: 15rem; padding: 5px;"
     placeholder="type a small number" />
-  <button id="btn_generate_prime_number_list" style="padding: 5px;" onclick="generatePrimeNumberList()">Generate</button>
+  <button id="btn_generate_prime_number_list" style="padding: 5px;" onclick="generateSmallPrimeNumbersArray()">Generate</button>
   <div>Generated prime number list:<br /><span id="result-info"></span></div>
   <textarea id="generated_prime_number_list" style="width: 100%; height: 200px"></textarea>
 </div>
@@ -244,19 +244,18 @@ NOTES:
 
 <script>
 
-function generatePrimeNumberList() {
+function generateSmallPrimeNumbersArray(n = 0) {
+
+  if(n == 0) {
+    // get value from input
+    n = parseInt(document.getElementById('generate_prime_number_list_up_to_value').value);
+  }
 
   // element to display generated prime number list !!
   let eleGeneratedPrimeNumberList = document.getElementById('generated_prime_number_list');
 
-  // get value
-  let value = parseInt(document.getElementById('generate_prime_number_list_up_to_value').value);
-
-  if(value < 10) {
+  if(n < 10) {
     eleGeneratedPrimeNumberList.value = 'Please type in a value >= 10';
-    return;
-  } else if(value > Number.MAX_SAFE_INTEGER) {
-    eleGeneratedPrimeNumberList.value = 'Please type in a value < ' + Number.MAX_SAFE_INTEGER;
     return;
   }
 
@@ -264,7 +263,7 @@ function generatePrimeNumberList() {
   let eleButton = document.getElementById('btn_generate_prime_number_list');
   eleButton.innerHTML = "Generating ..";
 
-  generatePrimeNumberArrayUsingWebWorker(value, result => {
+  generatePrimeNumberArrayUsingWebWorker(n, result => {
     if(result && Array.isArray(result.primes)) {
       // finished
       callbackAfterGeneratedPrimeNumberArray(result);
@@ -294,20 +293,14 @@ function callbackAfterGeneratedPrimeNumberArray(data) {
   if(totalGeneratedPrimeNumber < 1) {
     // nothing to display
     return;
+  } else if(totalGeneratedPrimeNumber < 100) {
+    console.log(generatedPrimeNumberArray);
   }
 
   // convert array to string
-  let string = '';
-  generatedPrimeNumberArray.map(function(value, index) {
-    if(index > 0) {
-      string += ","; // comma
-      if(index % 10 == 0) {
-        string += "\n"; // new line
-      }
-    }
-
-    string += value;
-  });
+  let string = generatedPrimeNumberArray
+  .map((value, index) => value + ((index + 1) % 10 == 0 ? "\n" : ''))
+  .join(',');
 
   // element to display generated prime number list !!
   let eleGeneratedPrimeNumberList = document.getElementById('generated_prime_number_list');
@@ -319,7 +312,7 @@ function callbackAfterGeneratedPrimeNumberArray(data) {
 // so we can delete it later
 var mywebworker;
 var primeNumberGeneratorCallback = null;
-function generatePrimeNumberArrayUsingWebWorker(value, callback) {
+function generatePrimeNumberArrayUsingWebWorker(n, callback) {
   if(! (callback)) {
     // no callback = can not continue
     return;
@@ -328,11 +321,11 @@ function generatePrimeNumberArrayUsingWebWorker(value, callback) {
 
   // prevent multiple instance 
   if(mywebworker) {
-    //throw new Error('generatePrimeNumberArrayUsingWebWorker(' + value + '), Worker is already existed, so reuse it');
+    //throw new Error('generatePrimeNumberArrayUsingWebWorker(' + n + '), Worker is already existed, so reuse it');
     
     // just use it, post message to it
     let href = document.location.href;
-    mywebworker.postMessage({ value: value, url: href});
+    mywebworker.postMessage({ value: n, url: href});
     return null;
   }
 
@@ -353,7 +346,7 @@ function generatePrimeNumberArrayUsingWebWorker(value, callback) {
         primeNumberGeneratorCallback(result.data);
       } else {
         // error handling ...
-        primeNumberGeneratorCallback('web worker callback onmessage, error: ' + result.data);        
+        primeNumberGeneratorCallback('web worker callback onmessage, error: ' + result.data);
       }
 
       // IMPORTANT to remove Worker instance to avoid re-creation (duplicate)
@@ -363,7 +356,7 @@ function generatePrimeNumberArrayUsingWebWorker(value, callback) {
 
     // call the function with parameter
     let href = document.location.href;
-    mywebworker.postMessage({ value: value, url: href});
+    mywebworker.postMessage({ value: n, url: href});
     return mywebworker;
   } else {
     primeNumberGeneratorCallback('Sorry, your browser does NOT support Web Worker');
@@ -388,10 +381,10 @@ function wrapperToGeneratePrimeNumberArray(msg) {
   }
 
   let currentPath = msg.data.url.substr(0, msg.data.url.lastIndexOf("/"));
-  console.log('current path: ' + currentPath);
+  //console.log('current path: ' + currentPath);
 
   currentPath += '/small_prime_number_generator.js';
-  console.log('js file path: ' + currentPath);
+  //console.log('js file path: ' + currentPath);
   /********************************/
   importScripts(currentPath);
   /********************************/
@@ -405,15 +398,13 @@ function wrapperToGeneratePrimeNumberArray(msg) {
   } else if(val > Number.MAX_SAFE_INTEGER) {
     console.error('error, val (' + val + ') is more than maximum: ' + Number.MAX_SAFE_INTEGER);
   } else {
-    console.log('wrapperToGeneratePrimeNumberArray(' + val + ') starting ..');
+    //console.log('wrapperToGeneratePrimeNumberArray(' + val + ') starting ..');
 
     let startTime = Date.now();
     generatedPrimeNumberArray = generateSmallPrimeNumberArrayUpTo(val);
     elapsedTime = Date.now() - startTime;
 
-    console.log('wrapperToGeneratePrimeNumberArray(' + val + ') finished, total: ' 
-      + generatedPrimeNumberArray.length 
-      + ', elapsed time: ' + elapsedTime);
+    //console.log(`wrapperToGeneratePrimeNumberArray(${val}) finished, total: ${generatedPrimeNumberArray.length}, elapsed time: ${elapsedTime}`);
   }
 
   // finished, so send callback with result
@@ -549,6 +540,32 @@ function getPrimeFactors(number) {
   }
 
   return result;
+}
+
+function benchmark(n) {
+  console.log('benchmark(' + n + ')');
+
+  let startTime = Date.now();
+  
+  generatePrimeNumberArrayUsingWebWorker(n, result => {
+    if(result && Array.isArray(result.primes)) {
+      // finished properly
+
+      let primes = result.primes;
+      
+      let elapsedTime = Date.now() - startTime;
+
+      // display stat
+      let totalPrime = primes.length;
+      console.log('benchmark elapsed time: ' + elapsedTime + ' ms, total primes: ' + totalPrime);
+
+      // display the 3 last created prime numbers
+      console.log('3 last created prime numbers: ' + primes[totalPrime - 3] + ', ' + primes[totalPrime - 2] + ', ' + primes[totalPrime - 1]);
+
+    } else if(typeof(result) == 'string') {
+      console.log(result);
+    }
+  });  
 }
 
 </script>
