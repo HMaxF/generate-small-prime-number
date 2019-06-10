@@ -42,7 +42,9 @@ function generateSmallPrimeNumberArrayUpTo(n) {
 
   // init value
   let primeArrayIndexLimit = 2;
-  let maxValueWithLimit = primeArray[primeArrayIndexLimit] * primeArray[primeArrayIndexLimit];
+  
+  // put limit -10 to avoid false positive (composite inside prime list)!
+  let maxValueWithLimit = (primeArray[primeArrayIndexLimit] * primeArray[primeArrayIndexLimit]) - 10;
 
   // optimize speed, dont allow function to access variable outside function
   function checkIfPrimeFromPrimeList(val, primeArray, primeArrayIndexLimit) {
@@ -109,7 +111,9 @@ function generateSmallPrimeNumberArrayUpTo(n) {
     } while(maxValueWithLimit > x);
     
     primeArrayIndexLimit++;
-    maxValueWithLimit = primeArray[primeArrayIndexLimit] * primeArray[primeArrayIndexLimit];
+    
+    // recalculate with limit -10 to avoid false positive (composite inside prime list)!
+    maxValueWithLimit = (primeArray[primeArrayIndexLimit] * primeArray[primeArrayIndexLimit]) - 10;
     
     // avoid overshoot too many!
     if(maxValueWithLimit > n) {
