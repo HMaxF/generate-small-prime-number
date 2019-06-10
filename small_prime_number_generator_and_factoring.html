@@ -350,8 +350,8 @@ function generatePrimeNumberArrayUsingWebWorker(n, callback) {
       }
 
       // IMPORTANT to remove Worker instance to avoid re-creation (duplicate)
-      mywebworker.terminate();
-      mywebworker = undefined; // remove variable from memory
+      // mywebworker.terminate();
+      // mywebworker = undefined; // remove variable from memory
     }
 
     // call the function with parameter

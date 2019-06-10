@@ -1,6 +1,9 @@
 /**
  * Written by Hariyanto Lim (hariyanto.lim@gmail.com)
  * Update
+ * 20190610 :
+ * Add inner do {} while() to reduce check IF()
+ * 
  * 20190607 :
  * Add protection to avoid accidental use N > 1e8
  * 
@@ -35,7 +38,8 @@ function generateSmallPrimeNumberArrayUpTo(n) {
     // optimize: avoid divide by 2 and 5 because 'val' is always ends with either 1,3,7,9
     // first test only divide by '3'
     if(val % 3 == 0) {
-      return;// 3; // not prime
+      // not prime
+      return;// 3
     }
 
     // primeArray = [2,3,5,7,..]
@@ -43,7 +47,7 @@ function generateSmallPrimeNumberArrayUpTo(n) {
     let i;
     for(i = 3; primeArrayIndexLimit > i; i++) {
       if(val % primeArray[i] == 0) {
-        return;// prime;
+        return;// primeArray[i];
       }
     }
 
@@ -58,39 +62,46 @@ function generateSmallPrimeNumberArrayUpTo(n) {
   // each loop will start at a number ends with '1' => 11,21,31,41,51,61,etc.
   while(x <= n) {
 
-    // ONE loop to ONLY check values end with '1', '3', '7' and '9'
-    // because they are probable prime number, so ONLY need to check them !
-    // eg: 11,13,17,19,21,23,27,29,31,33,37,39, ...
+    // create inner loop to reduce IF()
+    do {
+      // ONE loop to ONLY check values end with '1', '3', '7' and '9'
+      // because they are probable prime number, so ONLY need to check them !
+      // eg: 11,13,17,19,21,23,27,29,31,33,37,39, ...
 
-    // other values ends with either '0','2','4','5','6' or '8' are NOT prime
+      // REDUCE the number to check 
+      // by REMOVING the obvious numbers: all number ends with either '0','2','4','5','6' or '8'
+      // because they are definitely NOT prime
 
-    // at this point 'x' MUST BE ends with '1'
-    checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
+      // tried with hardcoded small 'increment' values [2,4,2,2] to optimize loop but a bit slow !
 
-    // hardcode small 'increment' values [2,4,2,2] to optimize speed a little
+      // at this point 'x' MUST BE ends with '1'
+      checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
 
-    // NOTE: remove check ==: if(x > n) break;
-    // we will 'overshoot' the list without check then reduce it later !!
+      // NOTE: remove check ==: if(x > n) break;
+      // we will 'overshoot' the list without check then reduce it later !!
 
-    x += 2; // ends with '3' 
-    //if(x > n) break;
-    checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
+      x += 2; // ends with '3' 
+      //if(x > n) break;
+      checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
 
-    x += 4; // ends with '7' 
-    //if(x > n) break;
-    checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
+      x += 4; // ends with '7' 
+      //if(x > n) break;
+      checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
 
-    x += 2; // ends with '9' 
-    //if(x > n) break;
-    checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
+      x += 2; // ends with '9' 
+      //if(x > n) break;
+      checkIfPrimeFromPrimeList(x, primeArray, primeArrayIndexLimit);
 
-    // set next value, ends with '1' 
-    x += 2;
-
-    // need to update primeArrayIndexLimit ?
-    if(x + 10 > maxValueWithLimit) {
-      primeArrayIndexLimit++;
-      maxValueWithLimit = primeArray[primeArrayIndexLimit] * primeArray[primeArrayIndexLimit];
+      // set next value, ends with '1' 
+      x += 2;
+    } while(maxValueWithLimit > x);
+    
+    primeArrayIndexLimit++;
+    maxValueWithLimit = primeArray[primeArrayIndexLimit] * primeArray[primeArrayIndexLimit];
+    
+    // avoid overshoot too many!
+    if(maxValueWithLimit > n) {
+      maxValueWithLimit = n;
     }
   }
 
